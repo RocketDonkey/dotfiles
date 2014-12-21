@@ -37,6 +37,9 @@ Plugin 'scrooloose/nerdtree'
 Plugin 'scrooloose/syntastic'
 Plugin 'tpope/vim-surround'
 Plugin 'vim-scripts/scratch.vim'
+Plugin 'xolox/vim-misc'
+Plugin 'xolox/vim-session'
+
 
 " If we are not at a Google workstation, use the public version of YCM.
 if at_google == 0
@@ -113,6 +116,12 @@ let g:airline_right_alt_sep = ''
 let g:airline_symbols.branch = ''
 let g:airline_symbols.readonly = ''
 let g:airline_symbols.linenr = ''
+
+
+" -------------------------
+" Vim Session
+" -------------------------
+let g:session_autosave = 'no'
 
 
 " -------------------------
