@@ -27,10 +27,8 @@ Plugin 'airblade/vim-gitgutter'
 Plugin 'altercation/vim-colors-solarized'
 Plugin 'bling/vim-airline'
 Plugin 'fatih/vim-go'
-Plugin 'google/vim-maktaba'
 Plugin 'google/vim-syncopate'
 Plugin 'honza/vim-snippets'
-Plugin 'jnwhiteh/vim-golang'
 Plugin 'kien/ctrlp.vim'
 Plugin 'majutsushi/tagbar'
 Plugin 'scrooloose/nerdtree'
@@ -41,23 +39,15 @@ Plugin 'xolox/vim-misc'
 Plugin 'xolox/vim-session'
 
 
-" If we are not at a Google workstation, use the public version of YCM.
+" If we are not at a Google workstation, use the public version of YCM and
+" Maktaba.
 if at_google == 0
   Plugin 'Valloric/YouCompleteMe'
+  Plugin 'google/vim-maktaba'
 endif
 
 call vundle#end()
 filetype plugin indent on
-
-
-" -------------------------
-" Golang
-" -------------------------
-set rtp+=/usr/lib/google-golang/misc/vim
-augroup go_setup
-  autocmd!
-  autocmd FileType go autocmd BufWritePre <buffer> Fmt
-augroup END
 
 
 " -------------------------
@@ -85,13 +75,13 @@ let g:tagbar_sort = 0
 " -------------------------
 " UltiSnips
 " -------------------------
-let g:UltiSnipsExpandTrigger = "<c-j>"
-let g:UltiSnipsJumpForwardTrigger = "<c-j>"
-let g:UltiSnipsJumpBackwardsTrigger = "<c-k>"
+let g:UltiSnipsExpandTrigger = '<c-j>'
+let g:UltiSnipsJumpForwardTrigger = '<c-j>'
+let g:UltiSnipsJumpBackwardsTrigger = '<c-k>'
 
 
 " -------------------------
-" Vim-Airline
+" vim-airline
 " -------------------------
 let g:airline_powerline_fonts = 1
 
@@ -119,9 +109,25 @@ let g:airline_symbols.linenr = ''
 
 
 " -------------------------
-" Vim Session
+" vim-gitgutter
+" -------------------------
+" Diff from branch 'master'.
+let g:gitgutter_diffargs='master'
+
+
+" -------------------------
+" vim-go
+" -------------------------
+let g:go_highlight_functions = 1
+let g:go_highlight_methods = 1
+let g:go_highlight_structs = 1
+
+
+" -------------------------
+" vim-session
 " -------------------------
 let g:session_autosave = 'no'
+let g:session_autoload = 'no'
 
 
 " -------------------------
@@ -162,12 +168,12 @@ colorscheme solarized
 
 " Allow for quickly toggling between dark/light.
 function! ToggleSolarizedBackground()
-  if g:solarized_background == "dark"
+  if g:solarized_background == 'dark'
     set background=light
-    let g:solarized_background = "light"
+    let g:solarized_background = 'light'
   else
     set background=dark
-    let g:solarized_background = "dark"
+    let g:solarized_background = 'dark'
   endif
   colorscheme solarized
 endfunction
@@ -215,7 +221,7 @@ augroup END
 
 " Restore the cursor position upon entering the buffer.
 function! ResCur()
-  if line("'\"") <= line("$")
+  if line("'\"") <= line('$')
     normal! g`"
     return 1
   endif
@@ -225,6 +231,11 @@ augroup res_cur
   autocmd!
   autocmd BufWinEnter * call ResCur()
 augroup END
+
+" -------------------------
+" Spelling.
+" -------------------------
+noremap <leader>ss :setlocal spell! spelllang=en_us<cr>
 
 " -------------------------
 " @Google
