@@ -21,6 +21,7 @@ call vundle#begin()
 Plugin 'gmarik/Vundle.vim'
 
 Plugin 'ConradIrwin/vim-bracketed-paste'
+Plugin 'Lokaltog/vim-easymotion'
 Plugin 'SirVer/ultisnips'
 Plugin 'Valloric/MatchTagAlways'
 Plugin 'airblade/vim-gitgutter'
@@ -106,6 +107,18 @@ let g:airline_right_alt_sep = ''
 let g:airline_symbols.branch = ''
 let g:airline_symbols.readonly = ''
 let g:airline_symbols.linenr = ''
+
+
+" -------------------------
+" vim-easymotion
+" -------------------------
+" Use EasyMotion work with the '/' operator.
+map  / <Plug>(easymotion-sn)
+omap / <Plug>(easymotion-tn)
+
+" Make n/N work through EasyMotion.
+map  n <Plug>(easymotion-next)
+map  N <Plug>(easymotion-prev)
 
 
 " -------------------------
@@ -231,6 +244,13 @@ augroup res_cur
   autocmd!
   autocmd BufWinEnter * call ResCur()
 augroup END
+
+augroup cron_config
+  autocmd!
+  autocmd FileType crontab setlocal foldmethod=marker
+  autocmd FileType crontab setlocal formatoptions-=t
+augroup END
+
 
 " -------------------------
 " Spelling.
