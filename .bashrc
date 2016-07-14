@@ -113,3 +113,13 @@ fi
 if [ -f ~/google/google_bash_settings.sh ]; then
   . ~/google/google_bash_settings.sh
 fi
+
+# The next line updates PATH for the Google Cloud SDK.
+source '/usr/local/google/home/tbowland/google-cloud-sdk/path.bash.inc'
+
+# The next line enables bash completion for gcloud.
+source '/usr/local/google/home/tbowland/google-cloud-sdk/completion.bash.inc'
+
+# Golang.
+export PATH=$PATH:/usr/local/go/bin
+export GOPATH=$HOME/golang

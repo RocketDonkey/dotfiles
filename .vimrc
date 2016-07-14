@@ -26,7 +26,6 @@ Plugin 'SirVer/ultisnips'
 Plugin 'Valloric/MatchTagAlways'
 Plugin 'airblade/vim-gitgutter'
 Plugin 'altercation/vim-colors-solarized'
-Plugin 'bling/vim-airline'
 Plugin 'fatih/vim-go'
 Plugin 'google/vim-syncopate'
 Plugin 'honza/vim-snippets'
@@ -35,15 +34,17 @@ Plugin 'majutsushi/tagbar'
 Plugin 'scrooloose/nerdtree'
 Plugin 'scrooloose/syntastic'
 Plugin 'tpope/vim-surround'
+Plugin 'vim-airline/vim-airline'
+Plugin 'vim-airline/vim-airline-themes'
 Plugin 'vim-scripts/scratch.vim'
 Plugin 'xolox/vim-misc'
 Plugin 'xolox/vim-session'
 
-
-" If we are not at a Google workstation, use the public version of YCM and
-" Maktaba.
+" If we are not at a Google workstation, use the public versions of a few
+" plugins and Glaive.
 if at_google == 0
   Plugin 'Valloric/YouCompleteMe'
+  Plugin 'google/vim-glaive'
   Plugin 'google/vim-maktaba'
 endif
 
@@ -76,15 +77,20 @@ let g:tagbar_sort = 0
 " -------------------------
 " UltiSnips
 " -------------------------
-let g:UltiSnipsExpandTrigger = '<c-j>'
-let g:UltiSnipsJumpForwardTrigger = '<c-j>'
-let g:UltiSnipsJumpBackwardsTrigger = '<c-k>'
+
+" Don't set this if at work (to avoid conflicts).
+if at_google == 0
+  let g:UltiSnipsExpandTrigger = '<c-j>'
+  let g:UltiSnipsJumpForwardTrigger = '<c-j>'
+  let g:UltiSnipsJumpBackwardsTrigger = '<c-k>'
+endif
 
 
 " -------------------------
 " vim-airline
 " -------------------------
 let g:airline_powerline_fonts = 1
+let g:airline_theme = 'zenburn'
 
 if !exists('g:airline_symbols')
   let g:airline_symbols = {}
@@ -113,19 +119,19 @@ let g:airline_symbols.linenr = ''
 " vim-easymotion
 " -------------------------
 " Use EasyMotion work with the '/' operator.
-map  / <Plug>(easymotion-sn)
-omap / <Plug>(easymotion-tn)
-
-" Make n/N work through EasyMotion.
-map  n <Plug>(easymotion-next)
-map  N <Plug>(easymotion-prev)
+" map  / <Plug>(easymotion-sn)
+" omap / <Plug>(easymotion-tn)
+"
+" " Make n/N work through EasyMotion.
+" map  n <Plug>(easymotion-next)
+" map  N <Plug>(easymotion-prev)
 
 
 " -------------------------
 " vim-gitgutter
 " -------------------------
 " Diff from branch 'master'.
-let g:gitgutter_diffargs='master'
+let g:gitgutter_diff_args='master'
 
 
 " -------------------------
@@ -145,8 +151,17 @@ let g:session_autoload = 'no'
 
 " -------------------------
 " Formatting
+"
+" Color themes from:
+"     https://github.com/xonecas/vim-colors-256
+" Color themes you seem to have liked:
+"   * 256-grayvim
+"   * 256-jungle
+"   * seoul256
 " -------------------------
 syntax enable
+
+color seoul256
 set expandtab
 set hlsearch
 set incsearch
@@ -154,6 +169,7 @@ set ignorecase
 set smartcase
 set laststatus=2
 set nu
+set relativenumber
 set shiftwidth=2
 set softtabstop=2
 set tabstop=2
@@ -161,6 +177,9 @@ set title
 set t_Co=256     " Force 256 colors so that Powerline/Solarized work.
 set tw=79
 set wildmode=longest,list,full
+
+set colorcolumn=81
+highlight ColorColumn ctermbg=8
 
 " Tell vim to remember certain things when we exit
 "  '10  :  marks will be remembered for up to 10 previously edited files
@@ -171,29 +190,35 @@ set wildmode=longest,list,full
 set viminfo='10,\"100,:20,%,n~/.viminfo
 
 
-" -------------------------
-" Solarized color scheme
-" -------------------------
-let g:solarized_termcolors=256
-let g:solarized_background='dark'
-set background=dark
-colorscheme solarized
+" Save undo's after a file is closed.
+set undofile
+set undodir=$HOME/.vim/undo
 
-" Allow for quickly toggling between dark/light.
-function! ToggleSolarizedBackground()
-  if g:solarized_background == 'dark'
-    set background=light
-    let g:solarized_background = 'light'
-  else
-    set background=dark
-    let g:solarized_background = 'dark'
-  endif
-  colorscheme solarized
-endfunction
 
-nnoremap <F5> :call ToggleSolarizedBackground()<CR>
-inoremap <F5> <ESC>:call ToggleSolarizedBackground()<CR>a
-vnoremap <F5> <ESC>:call ToggleSolarizedBackground()<CR>
+" -------------------------
+" Solarized color scheme.
+" Disabled for now in order to try something new.
+" -------------------------
+" let g:solarized_termcolors=256
+" let g:solarized_background='dark'
+" set background=dark
+" colorscheme solarized
+"
+" " Allow for quickly toggling between dark/light.
+" function! ToggleSolarizedBackground()
+"   if g:solarized_background == 'dark'
+"     set background=light
+"     let g:solarized_background = 'light'
+"   else
+"     set background=dark
+"     let g:solarized_background = 'dark'
+"   endif
+"   colorscheme solarized
+" endfunction
+"
+" nnoremap <F5> :call ToggleSolarizedBackground()<CR>
+" inoremap <F5> <ESC>:call ToggleSolarizedBackground()<CR>a
+" vnoremap <F5> <ESC>:call ToggleSolarizedBackground()<CR>
 
 
 " -------------------------
@@ -215,6 +240,9 @@ nnoremap k gk
 " These create newlines like o and O but stay in normal mode
 nnoremap zj o<Esc>k
 nnoremap zk O<Esc>j
+
+" Create a new (empty) file with the name of the item under the cursor.
+map <silent> <leader>cf :call writefile([], expand("<cfile>"), "t")<cr>
 
 
 " -------------------------
@@ -251,11 +279,23 @@ augroup cron_config
   autocmd FileType crontab setlocal formatoptions-=t
 augroup END
 
+" Automatically change the working path to the path of the current file
+autocmd BufNewFile,BufEnter * silent! lcd %:p:h
 
 " -------------------------
 " Spelling.
 " -------------------------
 noremap <leader>ss :setlocal spell! spelllang=en_us<cr>
+
+
+" -------------------------
+" swp Files.
+" -------------------------
+" Dump all .swp files to the same directory (which also avoids potentially
+" writing to NFS). The trailing double-slashses ensure that the filename is
+" unique (as it ensures the entire path is included in the filename).
+set directory=~/.vimswp
+
 
 " -------------------------
 " @Google
