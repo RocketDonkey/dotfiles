@@ -102,7 +102,7 @@ export TERM="screen-256color"
 
 # Powerline
 if [ -f /usr/local/lib/python2.7/site-packages/powerline/bindings/bash/powerline.sh ]; then
-    source /usr/local/lib/python2.7/site-packages/powerline/bindings/bash/powerline.sh
+  source /usr/local/lib/python2.7/site-packages/powerline/bindings/bash/powerline.sh
 fi
 
 # Load environment-specific settings.

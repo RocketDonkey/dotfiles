@@ -1,0 +1,6 @@
+[user]
+	name = taylor
+	email = taylor@taylorbowland.com
+[alias]
+	lg = log --graph --oneline --all
+	co = checkout

@@ -20,16 +20,17 @@ Plugin 'Valloric/MatchTagAlways'
 Plugin 'Valloric/YouCompleteMe'
 Plugin 'airblade/vim-gitgutter'
 Plugin 'altercation/vim-colors-solarized'
-Plugin 'fatih/vim-go'
+Plugin 'ctrlpvim/ctrlp.vim'
+Plugin 'gilgigilgil/anderson.vim'
 Plugin 'google/vim-codefmt'
 Plugin 'google/vim-glaive'
 Plugin 'google/vim-maktaba'
 Plugin 'google/vim-syncopate'
 Plugin 'honza/vim-snippets'
 Plugin 'junegunn/seoul256.vim'
-Plugin 'kien/ctrlp.vim'
 Plugin 'leafgarland/typescript-vim'
 Plugin 'majutsushi/tagbar'
+Plugin 'mhinz/vim-signify'
 Plugin 'nanotech/jellybeans.vim'
 Plugin 'scrooloose/nerdtree'
 Plugin 'scrooloose/syntastic'
@@ -41,9 +42,46 @@ Plugin 'vim-scripts/scratch.vim'
 Plugin 'xolox/vim-misc'
 
 call vundle#end()
+filetype plugin indent on
+
 call glaive#Install()
 
-filetype plugin indent on
+" -------------------------
+" CtrlP
+" -------------------------
+" Use AG for CtrlP.
+if executable('ag')
+  " Use ag over grep
+  set grepprg=ag\ --nogroup\ --nocolor
+
+  " Use ag in CtrlP for listing files.
+  let g:ctrlp_user_command = '/usr/bin/ag %s -i --nocolor --nogroup --hidden
+    \ --ignore .git
+    \ --ignore .svn
+    \ --ignore .hg
+    \ --ignore .DS_Store
+    \ --ignore "**/*.pyc"
+    \ --ignore .git5_specs
+    \ --ignore review
+    \ -g ""'
+
+  " ag is fast enough that CtrlP doesn't need to cache
+  let g:ctrlp_use_caching = 0
+endif
+
+" -------------------------
+" TypeScript plugin setup (Tsuquyomi)
+" -------------------------
+let g:tsuquyomi_use_dev_node_module = 2
+let g:tsuquyomi_use_vimproc = 1
+
+nnoremap <silent> <leader>h :echo tsuquyomi#hint()<CR>
+
+" -------------------------
+" Syncopate
+" -------------------------
+" Glaive syncopate colorscheme='beauty256'
+let g:html_font = ["DejaVu Sans Mono", "Consolas"]
 
 " -------------------------
 " vim-codefmt
@@ -106,6 +144,13 @@ let g:airline_symbols.readonly = ''
 let g:airline_symbols.linenr = ''
 
 " -------------------------
+" vim-commentary
+" -------------------------
+" Always use single-line commenting in C/C++.
+autocmd FileType c,cpp setlocal commentstring=//\ %s
+xnoremap <C-\> gc
+
+" -------------------------
 " vim-easymotion
 " -------------------------
 " Use EasyMotion work with the '/' operator.
@@ -121,7 +166,16 @@ let g:airline_symbols.linenr = ''
 " -------------------------
 " Diff from branch 'main'.
 let g:gitgutter_diff_args='main'
+" Reduce the updatetime to ensure the gutter is updated quickfast.
+set updatetime=100
 
+" -------------------------
+" vim-signify
+" -------------------------
+let g:signify_vcs_list=['hg', 'git']
+let g:signify_vcs_cmds = {
+  \ 'hg': 'hg diff -r .^ --color never --config defaults.diff= --nodates -U0 -- %f',
+  \ }
 
 " -------------------------
 " vim-go
@@ -133,16 +187,8 @@ let g:go_highlight_structs = 1
 " -------------------------
 " vim-session
 " -------------------------
-nnoremap <leader>jd :YcmCompleter GoToDefinition<CR>
-if !exists("g:ycm_semantic_triggers")
-   let g:ycm_semantic_triggers = {}
-endif
-let g:ycm_semantic_triggers['typescript'] = ['.']
-" Let clangd fully control code completion
-let g:ycm_clangd_uses_ycmd_caching = 0
-" Use installed clangd, not YCM-bundled clangd which doesn't get updates.
-let g:ycm_clangd_binary_path = exepath("clangd-13")
-let g:ycm_confirm_extra_conf = 0
+let g:session_autosave = 'no'
+let g:session_autoload = 'no'
 
 " -------------------------
 " Formatting
@@ -150,6 +196,7 @@ let g:ycm_confirm_extra_conf = 0
 " Color themes from:
 "     https://github.com/xonecas/vim-colors-256
 " Color themes you seem to have liked:
+"   * anderson
 "   * 256-grayvim
 "   * 256-jungle
 "   * jellybeans
@@ -158,6 +205,11 @@ let g:ycm_confirm_extra_conf = 0
 syntax enable
 
 color seoul256
+" Fix termguicolors.
+" https://stackoverflow.com/questions/62702766/termguicolors-in-vim-makes-everything-black-and-white
+let &t_8f = "\<Esc>[38:2:%lu:%lu:%lum"
+let &t_8b = "\<Esc>[48:2:%lu:%lu:%lum"
+set termguicolors
 set expandtab
 set hlsearch
 set incsearch
@@ -237,6 +289,12 @@ nnoremap zk O<Esc>j
 " Create a new (empty) file with the name of the item under the cursor.
 map <silent> <leader>cf :call writefile([], expand("<cfile>"), "t")<cr>
 
+" Move between windows with Ctrl+(hjkl).
+nnoremap <C-H> <C-W><C-H>
+nnoremap <C-L> <C-W><C-L>
+nnoremap <C-J> <C-W><C-J>
+nnoremap <C-K> <C-W><C-K>
+
 " -------------------------
 " Buffer actions.
 " -------------------------
@@ -291,7 +349,7 @@ noremap <leader>ss :setlocal spell! spelllang=en_us<cr>
 " -------------------------
 " swp Files.
 " -------------------------
-set directory=~/.vimswp/
+set directory=~/.vimswp
 
 " Read environment-specific settings from .vimrc_local.
 if filereadable(expand('~') . '/.vimrc_local')
