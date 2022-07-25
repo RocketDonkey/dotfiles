@@ -96,10 +96,6 @@ export LC_COLLATE="C"
 
 # Vim settings.
 export EDITOR='vim'
-export VIMRUNTIME=/usr/share/vim/vim74
-
-# git autocomplete
-source /etc/bash_completion.d/git
 
 # Change the TERM variable so Solarized works properly with Vim/tmux.
 export TERM="screen-256color"
@@ -109,17 +105,14 @@ if [ -f /usr/local/lib/python2.7/site-packages/powerline/bindings/bash/powerline
     source /usr/local/lib/python2.7/site-packages/powerline/bindings/bash/powerline.sh
 fi
 
-# Load Google-specific settings.
-if [ -f ~/google/google_bash_settings.sh ]; then
-  . ~/google/google_bash_settings.sh
+# Load environment-specific settings.
+if [ -f ~/.bashrc_local ]; then
+  . ~/.bashrc_local
 fi
 
-# The next line updates PATH for the Google Cloud SDK.
-source '/usr/local/google/home/tbowland/google-cloud-sdk/path.bash.inc'
-
-# The next line enables bash completion for gcloud.
-source '/usr/local/google/home/tbowland/google-cloud-sdk/completion.bash.inc'
-
 # Golang.
-export PATH=$PATH:/usr/local/go/bin
 export GOPATH=$HOME/golang
+export PATH=$PATH:/usr/local/go/bin:$HOME/.local/bin
+
+# fzf (installed from source then ~/.fzf/install
+[ -f ~/.fzf.bash ] && source ~/.fzf.bash

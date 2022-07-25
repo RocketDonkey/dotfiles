@@ -4,14 +4,6 @@
 set nocompatible
 filetype off
 
-
-" -------------------------
-" Determine if we are at a Google workstation.
-" -------------------------
-let google_path = $HOME . '/google/google_vim_settings.vim'
-let at_google = filereadable( google_path )
-
-
 " -------------------------
 " Vundle
 " -------------------------
@@ -22,41 +14,47 @@ Plugin 'gmarik/Vundle.vim'
 
 Plugin 'ConradIrwin/vim-bracketed-paste'
 Plugin 'Lokaltog/vim-easymotion'
+Plugin 'Quramy/tsuquyomi'
 Plugin 'SirVer/ultisnips'
 Plugin 'Valloric/MatchTagAlways'
+Plugin 'Valloric/YouCompleteMe'
 Plugin 'airblade/vim-gitgutter'
 Plugin 'altercation/vim-colors-solarized'
 Plugin 'fatih/vim-go'
+Plugin 'google/vim-codefmt'
+Plugin 'google/vim-glaive'
+Plugin 'google/vim-maktaba'
 Plugin 'google/vim-syncopate'
 Plugin 'honza/vim-snippets'
+Plugin 'junegunn/seoul256.vim'
 Plugin 'kien/ctrlp.vim'
+Plugin 'leafgarland/typescript-vim'
 Plugin 'majutsushi/tagbar'
+Plugin 'nanotech/jellybeans.vim'
 Plugin 'scrooloose/nerdtree'
 Plugin 'scrooloose/syntastic'
+Plugin 'tpope/vim-commentary'
 Plugin 'tpope/vim-surround'
 Plugin 'vim-airline/vim-airline'
 Plugin 'vim-airline/vim-airline-themes'
 Plugin 'vim-scripts/scratch.vim'
 Plugin 'xolox/vim-misc'
-Plugin 'xolox/vim-session'
-
-" If we are not at a Google workstation, use the public versions of a few
-" plugins and Glaive.
-if at_google == 0
-  Plugin 'Valloric/YouCompleteMe'
-  Plugin 'google/vim-glaive'
-  Plugin 'google/vim-maktaba'
-endif
 
 call vundle#end()
+call glaive#Install()
+
 filetype plugin indent on
 
+" -------------------------
+" vim-codefmt
+" -------------------------
+Glaive codefmt plugin[mappings]
+vnoremap <leader>f :FormatLines<CR>
 
 " -------------------------
 " NERDTree
 " -------------------------
 map <C-n> : NERDTreeToggle<CR>
-
 
 " -------------------------
 " Powerline
@@ -65,7 +63,6 @@ set rtp+=/usr/local/lib/python2.7/dist-packages/powerline/bindings/vim/
 set encoding=utf-8
 let g:Powerline_symbols = 'fancy'
 
-
 " -------------------------
 " Tagbar
 " -------------------------
@@ -73,18 +70,12 @@ nnoremap <F8> :TagbarToggle<CR>
 nnoremap \tp :TagbarTogglePause<CR>
 let g:tagbar_sort = 0
 
-
 " -------------------------
 " UltiSnips
 " -------------------------
-
-" Don't set this if at work (to avoid conflicts).
-if at_google == 0
-  let g:UltiSnipsExpandTrigger = '<c-j>'
-  let g:UltiSnipsJumpForwardTrigger = '<c-j>'
-  let g:UltiSnipsJumpBackwardsTrigger = '<c-k>'
-endif
-
+let g:UltiSnipsExpandTrigger = '<c-j>'
+let g:UltiSnipsJumpForwardTrigger = '<c-j>'
+let g:UltiSnipsJumpBackwardsTrigger = '<c-k>'
 
 " -------------------------
 " vim-airline
@@ -114,7 +105,6 @@ let g:airline_symbols.branch = ''
 let g:airline_symbols.readonly = ''
 let g:airline_symbols.linenr = ''
 
-
 " -------------------------
 " vim-easymotion
 " -------------------------
@@ -126,12 +116,11 @@ let g:airline_symbols.linenr = ''
 " map  n <Plug>(easymotion-next)
 " map  N <Plug>(easymotion-prev)
 
-
 " -------------------------
 " vim-gitgutter
 " -------------------------
-" Diff from branch 'master'.
-let g:gitgutter_diff_args='master'
+" Diff from branch 'main'.
+let g:gitgutter_diff_args='main'
 
 
 " -------------------------
@@ -141,13 +130,19 @@ let g:go_highlight_functions = 1
 let g:go_highlight_methods = 1
 let g:go_highlight_structs = 1
 
-
 " -------------------------
 " vim-session
 " -------------------------
-let g:session_autosave = 'no'
-let g:session_autoload = 'no'
-
+nnoremap <leader>jd :YcmCompleter GoToDefinition<CR>
+if !exists("g:ycm_semantic_triggers")
+   let g:ycm_semantic_triggers = {}
+endif
+let g:ycm_semantic_triggers['typescript'] = ['.']
+" Let clangd fully control code completion
+let g:ycm_clangd_uses_ycmd_caching = 0
+" Use installed clangd, not YCM-bundled clangd which doesn't get updates.
+let g:ycm_clangd_binary_path = exepath("clangd-13")
+let g:ycm_confirm_extra_conf = 0
 
 " -------------------------
 " Formatting
@@ -157,6 +152,7 @@ let g:session_autoload = 'no'
 " Color themes you seem to have liked:
 "   * 256-grayvim
 "   * 256-jungle
+"   * jellybeans
 "   * seoul256
 " -------------------------
 syntax enable
@@ -189,11 +185,9 @@ highlight ColorColumn ctermbg=8
 "  n... :  where to save the viminfo files
 set viminfo='10,\"100,:20,%,n~/.viminfo
 
-
 " Save undo's after a file is closed.
 set undofile
 set undodir=$HOME/.vim/undo
-
 
 " -------------------------
 " Solarized color scheme.
@@ -203,7 +197,7 @@ set undodir=$HOME/.vim/undo
 " let g:solarized_background='dark'
 " set background=dark
 " colorscheme solarized
-"
+" 
 " " Allow for quickly toggling between dark/light.
 " function! ToggleSolarizedBackground()
 "   if g:solarized_background == 'dark'
@@ -215,11 +209,10 @@ set undodir=$HOME/.vim/undo
 "   endif
 "   colorscheme solarized
 " endfunction
-"
+" 
 " nnoremap <F5> :call ToggleSolarizedBackground()<CR>
 " inoremap <F5> <ESC>:call ToggleSolarizedBackground()<CR>a
 " vnoremap <F5> <ESC>:call ToggleSolarizedBackground()<CR>
-
 
 " -------------------------
 " Mappings
@@ -243,7 +236,6 @@ nnoremap zk O<Esc>j
 
 " Create a new (empty) file with the name of the item under the cursor.
 map <silent> <leader>cf :call writefile([], expand("<cfile>"), "t")<cr>
-
 
 " -------------------------
 " Buffer actions.
@@ -279,37 +271,29 @@ augroup cron_config
   autocmd FileType crontab setlocal formatoptions-=t
 augroup END
 
+" Auto-format settings.
+augroup autoformat_settings
+  au FileType rust AutoFormatBuffer rustfmt
+  au FileType typescript AutoFormatBuffer clang-format
+augroup END
+
 " Automatically change the working path to the path of the current file
 autocmd BufNewFile,BufEnter * silent! lcd %:p:h
+
+" Fix C++ commenting for vim-commentary.
+autocmd FileType c,cpp setlocal commentstring=//\ %s
 
 " -------------------------
 " Spelling.
 " -------------------------
 noremap <leader>ss :setlocal spell! spelllang=en_us<cr>
 
-
 " -------------------------
 " swp Files.
 " -------------------------
-" Dump all .swp files to the same directory (which also avoids potentially
-" writing to NFS). The trailing double-slashses ensure that the filename is
-" unique (as it ensures the entire path is included in the filename).
-set directory=~/.vimswp
+set directory=~/.vimswp/
 
-
-" -------------------------
-" @Google
-" -------------------------
-" If we are on a Google workstation, load alternative settings.
-if at_google
-  exec 'source '. google_path
-else
-  " Still use Google's style settings for Python. In the default python.vim,
-  " the following is included:
-  " setlocal expandtab shiftwidth=4 softtabstop=4 tabstop=8
-  " First, source the standard version.
-  source $VIMRUNTIME/ftplugin/python.vim
-
-  " Then change our settings.
-  setlocal tabstop=8 shiftwidth=2 softtabstop=2 textwidth=80 expandtab
+" Read environment-specific settings from .vimrc_local.
+if filereadable(expand('~') . '/.vimrc_local')
+  source ~/.vimrc_local
 endif
